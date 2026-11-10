@@ -1,0 +1,833 @@
+/*
+ * The look borrows from an air traffic control strip board: paper flight
+ * strips in coloured plastic holders, on a grey console. Holder colours carry
+ * meaning here too: each one stands for the ability a drill trains.
+ */
+
+:root {
+  --console: #dde4e8;
+  --console-deep: #c9d3d9;
+  --strip: #fcfdfd;
+  --ink: #13212c;
+  --ink-soft: #46555f;
+  --rule: #aebac2;
+
+  --numerical: #d6931a;
+  --spatial: #1d5fbf;
+  --attention: #1f8a5b;
+  --memory: #7d4bb8;
+  --multitasking: #c4442f;
+
+  --good: #17704a;
+  --bad: #b42b23;
+  --focus: #1d5fbf;
+
+  --font: 'B612', 'Segoe UI', system-ui, sans-serif;
+  --font-num: 'B612 Mono', ui-monospace, 'Cascadia Mono', monospace;
+
+  --radius: 3px;
+  --measure: 62ch;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 106.25%; /* 17px */
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--console);
+  color: var(--ink);
+  font-family: var(--font);
+  line-height: 1.5;
+}
+
+h1,
+h2,
+p,
+ul,
+ol,
+dl,
+dd,
+fieldset {
+  margin: 0;
+  padding: 0;
+}
+
+ul,
+ol {
+  list-style: none;
+}
+
+a {
+  color: inherit;
+}
+
+:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+}
+
+.num {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Fixed-width figures, kept for the large numerals a drill is read from. */
+.mono {
+  font-family: var(--font-num);
+}
+
+/* ---------- Page frame ---------- */
+
+.app {
+  max-width: 60rem;
+  margin: 0 auto;
+  padding: 0 1.25rem 3rem;
+}
+
+.masthead {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.5rem 1.5rem;
+  padding: 1.1rem 0;
+  border-bottom: 2px solid var(--ink);
+}
+
+.masthead-name {
+  font-weight: 700;
+  font-size: 1.1rem;
+  text-decoration: none;
+}
+
+.masthead nav {
+  display: flex;
+  gap: 1.5rem;
+}
+
+.masthead nav a {
+  text-decoration: none;
+  padding-bottom: 0.15rem;
+  border-bottom: 3px solid transparent;
+}
+
+.masthead nav a:hover {
+  border-bottom-color: var(--rule);
+}
+
+.masthead nav a[aria-current='page'] {
+  font-weight: 700;
+  border-bottom-color: var(--ink);
+}
+
+main {
+  padding-top: 2.25rem;
+}
+
+main > section + section {
+  margin-top: 2.5rem;
+}
+
+h1 {
+  font-size: clamp(1.6rem, 4.2vw, 2.3rem);
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+  max-width: 24ch;
+}
+
+h2 {
+  font-size: 1.1rem;
+  margin-bottom: 0.75rem;
+}
+
+.intro p {
+  margin-top: 0.9rem;
+  max-width: var(--measure);
+  color: var(--ink-soft);
+}
+
+.section-note {
+  max-width: var(--measure);
+  color: var(--ink-soft);
+  font-size: 0.9rem;
+}
+
+h2 + .section-note {
+  margin-top: -0.4rem;
+  margin-bottom: 0.75rem;
+}
+
+h1 + .section-note {
+  margin-top: 0.6rem;
+}
+
+.footnote {
+  margin-top: 3.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--rule);
+  color: var(--ink-soft);
+  font-size: 0.85rem;
+}
+
+.footnote p {
+  max-width: var(--measure);
+}
+
+/* ---------- Strips ---------- */
+
+.bay {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.strip {
+  display: grid;
+  grid-template-columns: 0.8rem minmax(0, 1fr) 8.5rem 6rem 7.5rem;
+  background: var(--strip);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius);
+  color: var(--ink);
+  text-decoration: none;
+  overflow: hidden;
+}
+
+a.strip:hover {
+  border-color: var(--ink);
+}
+
+a.strip:hover .strip-title {
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+
+.strip-holder {
+  background: var(--holder, var(--rule));
+}
+
+.strip--numerical {
+  --holder: var(--numerical);
+}
+.strip--spatial {
+  --holder: var(--spatial);
+}
+.strip--attention {
+  --holder: var(--attention);
+}
+.strip--memory {
+  --holder: var(--memory);
+}
+.strip--multitasking {
+  --holder: var(--multitasking);
+}
+
+.strip-cell {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 0.1rem;
+  padding: 0.75rem 0.9rem;
+  border-left: 1px solid var(--rule);
+  min-width: 0;
+}
+
+.strip-cell--main {
+  border-left: 0;
+}
+
+.strip-title {
+  font-weight: 700;
+  font-size: 1.1rem;
+}
+
+.strip-summary,
+.strip-key {
+  color: var(--ink-soft);
+  font-size: 0.85rem;
+}
+
+.strip-value {
+  font-weight: 700;
+}
+
+/* A planned drill is a strip waiting in the pending bay: same shape, set back. */
+.strip--planned {
+  grid-template-columns: 0.8rem minmax(0, 1fr) 8.5rem;
+  background: transparent;
+  border-style: dashed;
+}
+
+.strip--planned .strip-holder {
+  opacity: 0.55;
+}
+
+.strip--planned .strip-title {
+  font-size: 1rem;
+}
+
+@media (max-width: 40rem) {
+  .strip {
+    grid-template-columns: 0.8rem repeat(3, minmax(0, 1fr));
+  }
+
+  .strip-holder {
+    grid-row: 1 / span 2;
+  }
+
+  .strip-cell--main {
+    grid-column: 2 / -1;
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .strip-cell--main + .strip-cell {
+    border-left: 0;
+  }
+
+  .strip--planned {
+    grid-template-columns: 0.8rem minmax(0, 1fr);
+  }
+
+  .strip--planned .strip-cell--main {
+    grid-column: 2;
+  }
+
+  /* One compact line for the ability, instead of a row of its own. */
+  .strip--planned .strip-cell:not(.strip-cell--main) {
+    grid-column: 2;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: baseline;
+    gap: 0.5rem;
+    padding-block: 0.45rem;
+    border-left: 0;
+  }
+}
+
+/* ---------- Buttons ---------- */
+
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.65rem 1.15rem;
+  border: 2px solid var(--ink);
+  border-radius: var(--radius);
+  background: var(--ink);
+  color: var(--strip);
+  font: inherit;
+  font-weight: 700;
+  line-height: 1.2;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.button:hover {
+  background: #22384a;
+  border-color: #22384a;
+}
+
+.button:disabled {
+  background: var(--console-deep);
+  border-color: var(--console-deep);
+  color: var(--ink-soft);
+  cursor: default;
+}
+
+.button--quiet {
+  background: transparent;
+  color: var(--ink);
+  border-color: var(--rule);
+  font-weight: 400;
+}
+
+.button--quiet:hover {
+  background: transparent;
+  border-color: var(--ink);
+}
+
+.button--danger {
+  background: var(--bad);
+  border-color: var(--bad);
+}
+
+.button--danger:hover {
+  background: #8f1f19;
+  border-color: #8f1f19;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+}
+
+.actions-question {
+  flex-basis: 100%;
+  font-weight: 700;
+}
+
+/* ---------- Briefing ---------- */
+
+.briefing-instructions {
+  display: grid;
+  gap: 0.5rem;
+  margin-top: 1rem;
+  max-width: var(--measure);
+  list-style: disc;
+  padding-left: 1.2rem;
+}
+
+.levels {
+  margin-top: 1.75rem;
+  border: 0;
+  display: grid;
+  gap: 0.5rem;
+}
+
+.levels legend {
+  font-weight: 700;
+  font-size: 1.1rem;
+  margin-bottom: 0.75rem;
+  padding: 0;
+}
+
+.level {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 0.9rem;
+  align-items: start;
+  padding: 0.8rem 1rem;
+  background: var(--strip);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius);
+  cursor: pointer;
+}
+
+.level:hover {
+  border-color: var(--ink);
+}
+
+.level:has(input:checked) {
+  border-color: var(--ink);
+  box-shadow: inset 0.3rem 0 0 var(--ink);
+}
+
+.level input {
+  width: 1.15rem;
+  height: 1.15rem;
+  margin: 0.2rem 0 0;
+  accent-color: var(--ink);
+}
+
+.level-body {
+  display: grid;
+  gap: 0.1rem;
+}
+
+.level-name {
+  font-weight: 700;
+}
+
+.level-meta {
+  color: var(--ink-soft);
+  font-size: 0.85rem;
+}
+
+/* ---------- Running a drill ---------- */
+
+.run-status {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 0.25rem 1.5rem;
+  font-weight: 700;
+}
+
+.run-status p + p {
+  font-weight: 400;
+  color: var(--ink-soft);
+}
+
+.timebar {
+  height: 0.7rem;
+  margin-top: 0.6rem;
+  background: var(--console-deep);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+/*
+ * The bar is the clock, so it keeps moving under prefers-reduced-motion:
+ * it is information, not decoration.
+ */
+.timebar-fill {
+  height: 100%;
+  background: var(--ink);
+  transform-origin: left center;
+  animation-name: timebar-drain, timebar-urgency;
+  animation-timing-function: linear;
+  animation-fill-mode: forwards;
+}
+
+@keyframes timebar-drain {
+  from {
+    transform: scaleX(1);
+  }
+  to {
+    transform: scaleX(0);
+  }
+}
+
+@keyframes timebar-urgency {
+  0%,
+  70% {
+    background: var(--ink);
+  }
+  75%,
+  100% {
+    background: var(--bad);
+  }
+}
+
+.run-item {
+  margin-top: 1rem;
+  padding: clamp(1.25rem, 4vw, 2.25rem);
+  background: var(--strip);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius);
+  min-height: 19rem;
+  display: grid;
+  align-items: center;
+}
+
+.verdict {
+  min-height: 1.5em;
+  margin: 0.9rem 0 1.25rem;
+  font-weight: 700;
+}
+
+.verdict--good {
+  color: var(--good);
+}
+
+.verdict--bad {
+  color: var(--bad);
+}
+
+/* ---------- Mental arithmetic ---------- */
+
+.arithmetic-caption {
+  color: var(--ink-soft);
+}
+
+.arithmetic-expression {
+  margin-top: 0.25rem;
+  font-size: clamp(2.1rem, 8vw, 3.6rem);
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+}
+
+/* Worded items are longer than bare sums; keep them on one line on a phone. */
+.arithmetic-expression--phrase {
+  font-size: clamp(1.25rem, 5.4vw, 2.6rem);
+  letter-spacing: 0;
+  text-wrap: balance;
+}
+
+.arithmetic-entry {
+  display: grid;
+  grid-template-columns: minmax(0, 11rem) auto;
+  gap: 0.35rem 0.75rem;
+  justify-content: start;
+  margin-top: 1.75rem;
+}
+
+.arithmetic-entry label {
+  grid-column: 1 / -1;
+  font-size: 0.9rem;
+  color: var(--ink-soft);
+}
+
+.arithmetic-entry input {
+  width: 100%;
+  padding: 0.5rem 0.7rem;
+  border: 2px solid var(--ink);
+  border-radius: var(--radius);
+  background: #fff;
+  color: var(--ink);
+  font-size: 1.5rem;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.arithmetic-entry input:read-only {
+  background: var(--console);
+  border-color: var(--rule);
+}
+
+/* ---------- Heading turns ---------- */
+
+.headings {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 15rem);
+  gap: 1.5rem 2.5rem;
+  align-items: center;
+}
+
+.headings--no-compass {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.headings-prompt {
+  font-size: 1.25rem;
+  line-height: 1.6;
+}
+
+.headings-prompt strong {
+  font-size: 1.6em;
+  line-height: 1;
+  letter-spacing: 0.02em;
+}
+
+.options {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.6rem;
+  margin-top: 1.5rem;
+  max-width: 26rem;
+}
+
+.option {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  width: 100%;
+  padding: 0.7rem 0.8rem;
+  border: 2px solid var(--rule);
+  border-radius: var(--radius);
+  background: #fff;
+  color: var(--ink);
+  font: inherit;
+  font-size: 1.1rem;
+  font-weight: 700;
+  text-align: left;
+  cursor: pointer;
+}
+
+.option:hover:not(:disabled) {
+  border-color: var(--ink);
+}
+
+.option:disabled {
+  cursor: default;
+  color: var(--ink-soft);
+}
+
+.option.is-correct {
+  border-color: var(--good);
+  background: #e4f3ec;
+  color: var(--ink);
+}
+
+.option.is-wrong {
+  border-color: var(--bad);
+  background: #f9e6e4;
+  color: var(--ink);
+}
+
+.option.is-wrong .option-label {
+  text-decoration: line-through;
+}
+
+.option-key {
+  display: inline-grid;
+  place-items: center;
+  width: 1.6rem;
+  height: 1.6rem;
+  border: 1px solid var(--rule);
+  border-radius: var(--radius);
+  font-size: 0.85rem;
+  font-weight: 400;
+  color: var(--ink-soft);
+  background: var(--console);
+}
+
+.compass {
+  width: 100%;
+  max-width: 15rem;
+  height: auto;
+  justify-self: center;
+}
+
+.compass-ring {
+  fill: #fff;
+  stroke: var(--ink);
+  stroke-width: 2;
+}
+
+.compass-tick {
+  stroke: var(--ink-soft);
+  stroke-width: 1;
+}
+
+.compass-tick--major {
+  stroke: var(--ink);
+  stroke-width: 2;
+}
+
+.compass-label {
+  font-family: var(--font);
+  font-size: 13px;
+  font-weight: 700;
+  fill: var(--ink);
+  text-anchor: middle;
+  dominant-baseline: central;
+}
+
+.compass-aircraft line {
+  stroke: var(--spatial);
+  stroke-width: 2.5;
+  stroke-linecap: round;
+}
+
+.compass-aircraft path,
+.compass-aircraft circle {
+  fill: var(--spatial);
+}
+
+.compass-target {
+  fill: var(--ink);
+}
+
+.compass-turn {
+  fill: none;
+  stroke: var(--good);
+  stroke-width: 7;
+  stroke-linecap: round;
+}
+
+@media (max-width: 40rem) {
+  .headings {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .compass {
+    grid-row: 1;
+    max-width: 12rem;
+  }
+}
+
+/* ---------- Results ---------- */
+
+.results-board {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  margin-top: 1.25rem;
+  background: var(--strip);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius);
+  max-width: 40rem;
+}
+
+.results-score {
+  padding: 1.25rem 1.75rem;
+  border-right: 1px solid var(--rule);
+}
+
+.results-score-value {
+  font-size: clamp(3rem, 12vw, 4.5rem);
+  font-weight: 700;
+  line-height: 1;
+}
+
+.results-score-label {
+  margin-top: 0.4rem;
+  color: var(--ink-soft);
+  font-size: 0.85rem;
+}
+
+.results-figures {
+  display: grid;
+  align-content: center;
+}
+
+.results-figures > div {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.6rem 1.1rem;
+}
+
+.results-figures > div + div {
+  border-top: 1px solid var(--rule);
+}
+
+.results-figures dt {
+  color: var(--ink-soft);
+}
+
+.results-figures dd {
+  font-weight: 700;
+}
+
+.results-comparison {
+  margin: 1.1rem 0 0.5rem;
+  font-weight: 700;
+}
+
+@media (max-width: 30rem) {
+  .results-board {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .results-score {
+    border-right: 0;
+    border-bottom: 1px solid var(--rule);
+  }
+}
+
+/* ---------- Session log ---------- */
+
+.table-scroll {
+  margin-top: 1rem;
+  overflow-x: auto;
+  background: var(--strip);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius);
+}
+
+.log {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.92rem;
+  white-space: nowrap;
+}
+
+.log th,
+.log td {
+  padding: 0.6rem 0.9rem;
+  text-align: left;
+}
+
+.log th {
+  color: var(--ink-soft);
+  font-weight: 400;
+  border-bottom: 1px solid var(--ink);
+}
+
+.log tbody tr + tr td {
+  border-top: 1px solid var(--rule);
+}
+
+.log .log-number {
+  text-align: right;
+}
